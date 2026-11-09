@@ -32,8 +32,9 @@ negative, are generated from raw artifacts. Code in Python + PyTorch; the base m
 
 Ver **[RESULTADOS.md](RESULTADOS.md)**, generado desde `res/`. En resumen: la prueba del sufijo (P2) se valida; la memoria
 de definiciones (P1) y el monitor amortizado (P3) no alcanzan sus umbrales y se retiran. Durante la ejecución se
-detectaron y corrigieron cuatro defectos de implementación (FIM por documento, sangría inicial, memoria en E4, escala de
-la memoria en E5); todos están en [DESVIACIONES.md](DESVIACIONES.md), con lo que se vio antes de corregirlos.
+detectaron y corrigieron tres defectos que afectaban a los resultados (FIM por documento, sangría inicial y escala de la
+memoria en E5), documentados en [DESVIACIONES.md](DESVIACIONES.md) con lo que se vio antes de corregirlos, y un fallo de
+memoria RAM en E4 que solo detenía el proceso.
 
 - `res/`: salidas crudas por ejemplo y resúmenes de E1–E5 (los cursores de evaluación se regeneran con
   `python -m chispa.gen cursores --seed 1337` y los objetivos de E5 con `python -m chispa.e5 objetivos --seed 5`).

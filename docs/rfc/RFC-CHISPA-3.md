@@ -51,7 +51,7 @@ H16 — Abstención por señal propia de un modelo local de ≤100M en CPU.
 - Falsación: E1 y E5.
 - Supuestos eje:
   - S1: en ≤100M el fallo de identificadores es de acceso y no de elección — indicador de cambio: fracción de errores del base cuyo nombre correcto ya estaba en la ventana — evidencia discriminante: >60% (umbral propuesto) apunta a elección y resta valor a la memoria.
-- Estado: RETIRADO. Resultado: ../chispa-lab/RESULTADOS.md (E5 no alcanza el umbral de B − A; E1 sobrevive en el filo).
+- Estado: RETIRADO. Resultado: ../../RESULTADOS.md (E5 no alcanza el umbral de B − A; E1 sobrevive en el filo).
 
 ### Propuesta 2 (I2-P3, corregida) — Prueba del sufijo: el código de abajo como verificador del propio modelo
 
@@ -63,7 +63,7 @@ H16 — Abstención por señal propia de un modelo local de ≤100M en CPU.
 - Falsación: E2.
 - Supuestos eje:
   - S1: los fallos de un modelo de 20M rompen la continuidad con el código de abajo — indicador de cambio: separación de Δ entre completados aceptables y no aceptables — evidencia discriminante: KS < 0.1 (umbral propuesto) la refuta.
-- Estado: VALIDADO. Resultado: ../chispa-lab/RESULTADOS.md (E2 supera el umbral de AUROC y el de latencia con 4 hilos).
+- Estado: VALIDADO. Resultado: ../../RESULTADOS.md (E2 supera el umbral de AUROC y el de latencia con 4 hilos).
 
 ### Propuesta 3 (I3-P3 + residuo de I1-P3) — Monitor amortizado: la tabla de símbolos actúa al entrenar, no al decodificar
 
@@ -75,7 +75,7 @@ H16 — Abstención por señal propia de un modelo local de ≤100M en CPU.
 - Falsación: E3 y E4.
 - Supuestos eje:
   - S1: los nombres indefinidos de un modelo de 20M son invenciones y no referencias a otros archivos — indicador de cambio: fracción de esos nombres que existen en otro archivo del repositorio — evidencia discriminante: si es mayoría (umbral propuesto), el remedio es la Propuesta 1, no la pérdida.
-- Estado: RETIRADO. Resultado: ../chispa-lab/RESULTADOS.md (E4 no alcanza la reducción preregistrada y el sesgo sin entrenar la iguala; E3 sobrevive sin robustez).
+- Estado: RETIRADO. Resultado: ../../RESULTADOS.md (E4 no alcanza la reducción preregistrada y el sesgo sin entrenar la iguala; E3 sobrevive sin robustez).
 
 ## 4. Alternativas
 
