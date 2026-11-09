@@ -24,3 +24,10 @@ Cada entrada lleva fecha y se escribe ANTES de ver la métrica afectada.
 - **Cambio:** ≤4 símbolos × 64 tokens = 256 tokens de cabecera por secuencia, para igualar el cómputo extra del brazo A
   (256 tokens de prefijo). Sin esto, B y C gastarían el doble de cómputo extra que A y la comparación no sería justa.
 - **Umbrales:** sin cambio.
+
+## 2026-11-09 — E2 y E5: dónde y cómo se mide la latencia
+- **Preregistrado:** latencia extra en CPU (E2) y latencia por paso en CPU (E5), sin fijar la máquina.
+- **Cambio:** la latencia se mide en el portátil del usuario (la CPU del editor), no en el servidor, con int8 dinámico y
+  1 y 4 hilos. En E2, la extra de la prueba del sufijo con el prefijo ya en caché KV. En E5, el prefill de la ventana
+  (A: 256 de prefijo + 768; B/C: 768 + producto con las claves de E), que es la parte que difiere entre brazos.
+- **Umbrales:** sin cambio.

@@ -132,13 +132,19 @@ def main():
         for c, g, x, xc in zip(curs, comps, d, d_ctl):
             fo.write(json.dumps({"repo": c["repo"], "delta": x, "delta_ctl": xc, "lp_medio": g["lp_medio"], "n": g["n"],
                                  "sim": lev_sim(g["compl"], c["truth"])}) + "\n")
-    m_cpu, _ = cargar_modelo(a.modelo, "cpu"); m_cpu.eval()
+    if a.n_lat > 0:
+        medir_latencia(a.modelo, tk, curs, comps, out, a.n_lat)
+    analisis(out, a.seed)
+
+
+def medir_latencia(modelo, tk, curs, comps, out, n):
+    from .model import cargar_modelo
+    m_cpu, _ = cargar_modelo(modelo, "cpu"); m_cpu.eval()
     m_cpu = torch.ao.quantization.quantize_dynamic(m_cpu, {torch.nn.Linear}, dtype=torch.qint8)
-    lat = latencia(m_cpu, tk, curs, comps, a.n_lat)
-    with open(out / "latencia.jsonl", "w") as fo:
+    lat = latencia(m_cpu, tk, curs, comps, n)
+    with open(Path(out) / "latencia.jsonl", "w") as fo:
         for r in lat:
             fo.write(json.dumps(r) + "\n")
-    analisis(out, a.seed)
 
 
 def analisis(out, seed=1337):
@@ -155,7 +161,8 @@ def analisis(out, seed=1337):
     for _ in range(1000):
         sel = np.concatenate([idx[r] for r in rng.choice(reps, len(reps))])
         diffs.append(auroc(p1[sel], y[sel]) - auroc(p0[sel], y[sel]))
-    lat = [json.loads(l) for l in open(out / "latencia.jsonl")]
+    lf = out / "latencia.jsonl"
+    lat = [json.loads(l) for l in open(lf)] if lf.exists() else []
     p95 = {th: float(np.percentile([r["ms"] for r in lat if r["hilos"] == th], 95)) for th in sorted({r["hilos"] for r in lat})}
     mejora = a1 - a0
     res = {"cursores": len(rows), "aceptables": int(y.sum()), "auroc_base": round(a0, 4), "auroc_delta": round(a1, 4),
@@ -163,7 +170,8 @@ def analisis(out, seed=1337):
            "mejora_ic90": [round(float(np.nanpercentile(diffs, 5)), 4), round(float(np.nanpercentile(diffs, 95)), 4)],
            "latencia_extra_p95_ms": p95,
            "veredicto": "INCONCLUSO" if (np.isnan(mejora) or y.sum() < 50 or (1 - y).sum() < 50) else
-                        ("MUERE" if (mejora < 0.02 or min(p95.values()) > 50) else "SOBREVIVE")}
+                        ("MUERE" if mejora < 0.02 else ("PENDIENTE_LATENCIA" if not p95 else
+                        ("MUERE" if min(p95.values()) > 50 else "SOBREVIVE")))}
     json.dump(res, open(out / "resumen.json", "w"), indent=1)
     print(json.dumps(res, indent=1))
 
