@@ -69,10 +69,18 @@ logits en la conversión: {exp.get('dif_max_logits', float('nan')):.1e}.
 from transformers import AutoModelForCausalLM, AutoTokenizer
 tk = AutoTokenizer.from_pretrained("{a.repo.split('/')[0]}/chispa-20m-python")
 m = AutoModelForCausalLM.from_pretrained("{a.repo.split('/')[0]}/chispa-20m-python")
-prompt = "<fim_prefix>def area(r):\\n    return <fim_suffix>\\n<fim_middle>"
+eos, pad = tk.convert_tokens_to_ids("<|endoftext|>"), tk.convert_tokens_to_ids("<pad>")
+# FIM en formato PSM: el modelo rellena el hueco entre prefijo y sufijo
+prompt = "<fim_prefix>def read_lines(path):\\n    with open(path) as f:\\n        <fim_suffix>\\n<fim_middle>"
 ids = tk(prompt, return_tensors="pt").input_ids
-print(tk.decode(m.generate(ids, max_new_tokens=16, do_sample=False)[0][ids.shape[1]:]))
+out = m.generate(ids, max_new_tokens=16, do_sample=False, eos_token_id=eos, pad_token_id=pad)
+linea = tk.decode(out[0][ids.shape[1]:], skip_special_tokens=True).split("\\n")[0]
+print(linea.lstrip())   # -> return f.readlines()
 ```
+
+Si el prefijo termina justo después de la sangría, el modelo tiende a empezar con espacios de más: recorta el inicio
+de la línea (`lstrip`) o prohíbe en el primer paso las piezas que empiezan por espacio, que es lo que se hizo en los
+experimentos.
 
 ## Evaluación (repositorios retenidos, 20,000 cursores dentro de cuerpos de función)
 
