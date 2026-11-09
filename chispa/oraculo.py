@@ -122,21 +122,29 @@ class FuenteUL:
         fs = sorted((datos / "ul").glob("ul-*.bin"))
         self.toks = [np.memmap(f, dtype=np.uint16, mode="r") for f in fs]
         self.anns = [np.memmap(f.with_suffix(".ann"), dtype=np.int32, mode="r") for f in fs]
-        self.sets = [np.load(str(f).replace(".bin", ".sets.npz")) for f in fs]
+        self.sets = []
+        for f in fs:  # se cargan UNA vez: indexar un NpzFile relee y copia el array entero en cada acceso
+            z = np.load(str(f).replace(".bin", ".sets.npz"))
+            self.sets.append((np.asarray(z["ids"]), np.asarray(z["off"])))
         self.lens = np.array([len(t) - ctx - 1 for t in self.toks]); self.ctx = ctx
         self.rng = np.random.default_rng(seed)
 
     def lote(self, B):
         fi = self.rng.choice(len(self.toks), size=B, p=self.lens / self.lens.sum())
-        xs, conj = [], []
+        xs, bs, ps, filas, cols = [], [], [], [], []
         for b, f in enumerate(fi):
             i = int(self.rng.integers(0, self.lens[f]))
             xs.append(torch.from_numpy(self.toks[f][i:i + self.ctx + 1].astype(np.int64)))
             a = self.anns[f][i + 1:i + self.ctx + 1]
+            ids, off = self.sets[f]
             for p in np.nonzero(a >= 0)[0]:
-                s = self.sets[f]; o = s["off"]; sid = int(a[p])
-                conj.append((b, int(p), s["ids"][o[sid]:o[sid + 1]]))
+                sid = int(a[p]); seg = ids[off[sid]:off[sid + 1]]
+                filas.append(np.full(len(seg), len(bs), dtype=np.int64)); cols.append(seg.astype(np.int64))
+                bs.append(b); ps.append(int(p))
         x = torch.stack(xs)
+        conj = (torch.tensor(bs, dtype=torch.long), torch.tensor(ps, dtype=torch.long),
+                torch.from_numpy(np.concatenate(filas)) if filas else torch.zeros(0, dtype=torch.long),
+                torch.from_numpy(np.concatenate(cols)) if cols else torch.zeros(0, dtype=torch.long))
         return x[:, :-1], x[:, 1:], conj, self.first
 
     def saltar(self, B):
@@ -148,14 +156,14 @@ def perdida_ul(fwd, model, lote, dev, a):
     x, y = x.to(dev, non_blocking=True), y.to(dev, non_blocking=True)
     h = fwd(x)
     ce = ce_por_trozos(h, model.emb.weight, y)
-    parts = {"loss": ce.item(), "n_ul": float(len(conj))}
-    if not conj or a.alpha == 0:
+    bi, pi, filas, cols = conj
+    parts = {"loss": ce.item(), "n_ul": float(len(bi))}
+    if len(bi) == 0 or a.alpha == 0:
         return ce, {**parts, "ul": 0.0}
-    bi = torch.tensor([c[0] for c in conj], device=dev); pi = torch.tensor([c[1] for c in conj], device=dev)
+    bi, pi = bi.to(dev, non_blocking=True), pi.to(dev, non_blocking=True)
     p = F.softmax(model.logits(h[bi, pi]).float(), -1)
     allowed = torch.zeros_like(p, dtype=torch.bool)
-    for r, (_, _, ids) in enumerate(conj):
-        allowed[r, torch.from_numpy(np.asarray(ids, dtype=np.int64)).to(dev)] = True
+    allowed[filas.to(dev, non_blocking=True), cols.to(dev, non_blocking=True)] = True
     fm = first.to(dev)
     m = (p * (fm & ~allowed)).sum(-1)               # masa prohibida: inicios de nombre no visibles
     ul = -torch.log((1 - m).clamp(min=1e-6)).mean()
