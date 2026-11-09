@@ -5,7 +5,7 @@ cd /workspace/chispa-lab
 D=/workspace/datos; R=/workspace/res; RUNS=/workspace/runs
 mkdir -p logs "$R"
 export CHISPA_SITEPKGS=/workspace/sitepkgs
-NP=$(nproc)
+NP=24
 python -m chispa.paquetes --datos "$D" --destino /workspace/sitepkgs --n 20            > logs/6_paquetes.log 2>&1
 python -m chispa.e1 --datos "$D" --out "$R/e1" --repos 500 --procs "$NP"                > logs/7_e1.log 2>&1
 python -m chispa.gen cursores --datos "$D" --out "$R/cursores.jsonl" --n 20000 --seed 1337 > logs/8_cursores.log 2>&1

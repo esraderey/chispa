@@ -4,7 +4,7 @@ set -euo pipefail
 cd /workspace/chispa-lab
 D=/workspace/datos; R=/workspace/res; RUNS=/workspace/runs
 export CHISPA_SITEPKGS=/workspace/sitepkgs
-NP=$(nproc)
+NP=24
 python -m chispa.memdata --datos "$D" --split train --tokens 4.2e8 --seed 99 --procs "$NP"  > logs/16_memdata.log 2>&1
 python -m chispa.e5 objetivos --datos "$D" --out "$R/e5/objetivos.jsonl" --n 20000 --seed 5 >> logs/16_memdata.log 2>&1
 for run in A:1337 A:1338 B:1337 B:1338 C:1337; do
