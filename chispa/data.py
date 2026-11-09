@@ -155,6 +155,29 @@ def fim(text: str, rng: random.Random, p_fim=0.5, p_linea=0.5) -> tuple[str, boo
     return f"<fim_prefix>{pre}<fim_suffix>{suf}<fim_middle>{mid}", True
 
 
+SEG_CHARS = 2400
+
+
+def segmento(text: str, rng: random.Random, max_chars: int = SEG_CHARS) -> str:
+    """Tramo de líneas consecutivas de ≤ max_chars (≈800 tokens), para que prefijo, sufijo y medio quepan en una ventana."""
+    lines = text.split("\n")
+    i = rng.randrange(len(lines)); j, n = i, 0
+    while j < len(lines) and n + len(lines[j]) + 1 <= max_chars:
+        n += len(lines[j]) + 1; j += 1
+    if j == i:  # una sola línea más larga que el tope
+        return lines[i][:max_chars] + "\n"
+    return "\n".join(lines[i:j]) + "\n"
+
+
+def doc_entrenamiento(text: str, rng: random.Random, p_fim: float = 0.5):
+    """FIM a nivel de segmento (DESVIACIONES 2026-11-09): con prob. p_fim, un segmento transformado; si no, el archivo entero."""
+    if rng.random() < p_fim:
+        t, isf = fim(segmento(text, rng), rng, p_fim=1.0)
+        if isf:
+            return t, True
+    return text, False
+
+
 def base(datos: Path, tokens: float, seed: int, shard_tokens: int = 50_000_000):
     from .tok import cargar
     tk = cargar(datos)
@@ -181,7 +204,7 @@ def base(datos: Path, tokens: float, seed: int, shard_tokens: int = 50_000_000):
 
     for r in repos(datos, "train"):
         for f in r["files"]:
-            t, isf = fim(f["content"], rng)
+            t, isf = doc_entrenamiento(f["content"], rng)
             nfim += isf; ndoc += 1
             batch.append((t, isf))
             if len(batch) >= 2000:

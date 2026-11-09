@@ -73,7 +73,7 @@ def _doc(args):
 
 
 def construir(datos: Path, tokens: float, seed: int, procs: int, shard=25_000_000):
-    from .data import repos, fim
+    from .data import repos, doc_entrenamiento
     out = datos / "ul"; out.mkdir(exist_ok=True)
     rng = random.Random(seed); eot = None
 
@@ -82,7 +82,7 @@ def construir(datos: Path, tokens: float, seed: int, procs: int, shard=25_000_00
             if rng.random() > 0.25:  # submuestra para no recorrer todo el corpus
                 continue
             for f in r["files"]:
-                t, isf = fim(f["content"], rng)
+                t, isf = doc_entrenamiento(f["content"], rng)
                 yield (t, not isf)
 
     _init(str(datos)); eot = _TK.token_to_id("<|endoftext|>")

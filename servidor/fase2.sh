@@ -6,10 +6,9 @@ D=/workspace/datos; R=/workspace/res; RUNS=/workspace/runs
 mkdir -p logs "$R"
 export CHISPA_SITEPKGS=/workspace/sitepkgs
 NP=24
-python -m chispa.paquetes --datos "$D" --destino /workspace/sitepkgs --n 20            > logs/6_paquetes.log 2>&1
-python -m chispa.e1 --datos "$D" --out "$R/e1" --repos 500 --procs "$NP"                > logs/7_e1.log 2>&1
-python -m chispa.gen cursores --datos "$D" --out "$R/cursores.jsonl" --n 20000 --seed 1337 > logs/8_cursores.log 2>&1
-python -m chispa.e4 dev --datos "$D" --cursores "$R/cursores.jsonl" --out "$R/cursores_dev.jsonl" >> logs/8_cursores.log 2>&1
+[ -f /workspace/sitepkgs/_chispa_paquetes.json ] || python -m chispa.paquetes --datos "$D" --destino /workspace/sitepkgs --n 20 > logs/6_paquetes.log 2>&1
+[ -f "$R/e1/resumen.json" ] || python -m chispa.e1 --datos "$D" --out "$R/e1" --repos 500 --procs "$NP" > logs/7_e1.log 2>&1
+[ -f "$R/cursores_dev.jsonl" ] || { python -m chispa.gen cursores --datos "$D" --out "$R/cursores.jsonl" --n 20000 --seed 1337 > logs/8_cursores.log 2>&1 && python -m chispa.e4 dev --datos "$D" --cursores "$R/cursores.jsonl" --out "$R/cursores_dev.jsonl" >> logs/8_cursores.log 2>&1; }
 # E3: completados del B20 final
 python -m chispa.gen completar --datos "$D" --modelo "$RUNS/B20/final.pt" --cursores "$R/cursores.jsonl" \
        --out "$R/base/compl.jsonl" --lote 64                                             > logs/9_compl_base.log 2>&1

@@ -66,7 +66,19 @@ class Gen:
         return self.tk.encode(s, add_special_tokens=False).ids
 
     def prompt_fim(self, prefix, suffix):
-        p = self.ids(prefix)[-PRE_TOK:]; s = self.ids(suffix)[:SUF_TOK]
+        """Prefijo y sufijo recortados en saltos de línea, como los segmentos FIM del entrenamiento."""
+        p = self.ids(prefix)
+        if len(p) > PRE_TOK:
+            p = p[-PRE_TOK:]
+            k = next((i for i, t in enumerate(p) if t in self.nl), None)
+            if k is not None and k < len(p) - 1:
+                p = p[k + 1:]
+        s = self.ids(suffix)
+        if len(s) > SUF_TOK:
+            s = s[:SUF_TOK]
+            k = max((i for i, t in enumerate(s) if t in self.nl), default=None)
+            if k is not None:
+                s = s[:k + 1]
         return [self.fp] + p + [self.fs] + s + [self.fm]
 
     @torch.no_grad()
