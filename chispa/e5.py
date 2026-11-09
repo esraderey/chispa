@@ -100,7 +100,7 @@ def evaluar(datos, modelo, brazo, obj_path, out, dev=None, lote=48):
                     for j, p in enumerate(ps):
                         x[j, :len(p)] = torch.tensor(p, device=dev)
                     h = m(x)[torch.arange(len(ps)), torch.tensor([len(p) - 1 for p in ps])].float()
-                    lv = m.logits(h); lm = m.consultas(h) @ keys.float().t()
+                    lv = m.logits(h); lm = (m.consultas(h) @ keys.float().t()) / keys.shape[-1] ** 0.5  # misma escala que al entrenar
                     best = torch.cat([lv, lm], 1).argmax(-1)
                     for j, b in enumerate(best.tolist()):
                         if b >= lv.shape[1]:

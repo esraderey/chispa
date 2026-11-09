@@ -183,11 +183,11 @@ def perdida_mem(modo, fwd, model, lote, dev, a):
     pi = pos[sel] - 1                                # el estado que predice el token en pos
     tgt = bi * NSYM + sym[sel]
     hq = h[bi, pi]
-    lv = model.logits(hq).float(); lmem = (model.consultas(hq) @ keys.t()).float()
+    lv = model.logits(hq).float(); lmem = (model.consultas(hq) @ keys.t()).float() / keys.shape[-1] ** 0.5  # escala de atención (DESVIACIONES)
     vacio = (g["hdr"].reshape(B * NSYM, HL)[:, 0] == pad) if modo == "memB" else ~(g["tri"].reshape(B * NSYM, NTRI)[:, 0] >= 0)
     lmem = lmem.masked_fill(vacio[None, :], -1e4)
     mem = F.cross_entropy(torch.cat([lv, lmem], 1), lv.shape[1] + tgt)
-    return lm + mem, {"loss": lm.item(), "mem": mem.item()}
+    return lm + getattr(a, "lam_mem", 0.3) * mem, {"loss": lm.item(), "mem": mem.item()}
 
 
 def main():

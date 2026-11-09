@@ -54,3 +54,13 @@ Cada entrada lleva fecha y se escribe ANTES de ver la métrica afectada.
   tarea: el cursor está al inicio del contenido de la línea y la verdad nunca empieza por espacio. Se aplica igual en
   E2, E3 y E4 (todos los brazos y el control de sesgo). Los completados parciales sin este cambio se descartan.
 - **Umbrales:** sin cambio.
+
+## 2026-11-09 — E5: escala de los logits de memoria y peso de su pérdida (defecto; se rehacen B y C)
+- **Preregistrado:** la pérdida de memoria se suma a la de lenguaje, sin peso explícito.
+- **Defecto detectado:** la pérdida de lenguaje del brazo B se estancó en ~4.4 frente a ~1.5 del brazo A. Medido en
+  local: al inicio, la norma del gradiente de la memoria era 542 frente a 9.5 del lenguaje; con el recorte global a
+  1.0, el modelo de lenguaje casi no aprendía. Se detectó por la curva de pérdida, antes de evaluar B.
+- **Cambio:** logits de memoria escalados por 1/√d (como la atención) en entrenamiento y evaluación, y peso λ = 0.3 para
+  la pérdida de memoria en B y C (gradientes medidos: B ~9 frente a 9.5; C ~0.5 frente a 8.5). Se descarta B_1337 (en
+  `res_e5_defecto/`) y se reentrenan B (2 semillas) y C. El brazo A no usa memoria y no cambia.
+- **Umbrales:** sin cambio.

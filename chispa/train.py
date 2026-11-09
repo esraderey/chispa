@@ -156,6 +156,7 @@ def main():
     ap.add_argument("--alpha", type=float, default=0.3)      # E4
     ap.add_argument("--solo-decay", action="store_true")     # E4: continuación desde at80
     ap.add_argument("--prefijo", type=int, default=256)      # E5 brazo A
+    ap.add_argument("--lam-mem", type=float, default=0.3)    # E5 brazos B y C: peso de la pérdida de memoria
     entrenar(ap.parse_args())
 
 
