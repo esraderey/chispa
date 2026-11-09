@@ -44,3 +44,13 @@ Cada entrada lleva fecha y se escribe ANTES de ver la métrica afectada.
   rehacen E2, E3 y E4 desde cero. Los artefactos de la corrida defectuosa se conservan en `res_fim_doc/` y no se usan.
 - **Vistos antes del cambio (no válidos):** E3 con invenciones 83.7 % y E2 con mejora de AUROC +0.029 sobre 113
   sugerencias aceptables. Los umbrales no cambian; E1 (sin FIM) se conserva.
+
+## 2026-11-09 — Decodificación: sin espacio inicial en el primer paso
+- **Preregistrado:** completado voraz FIM hasta fin de línea.
+- **Problema (inspección cualitativa de los primeros 15,000 completados del B20 reentrenado, antes de calcular E2–E4):**
+  la mayoría empezaba con espacios de sangría extra. En el entrenamiento FIM el corte cae a menudo dentro de la sangría,
+  así que el modelo duda de si la sangría del prefijo está completa.
+- **Cambio:** en el primer paso se prohíben las piezas que empiezan por espacio o tabulador. Es una restricción de la
+  tarea: el cursor está al inicio del contenido de la línea y la verdad nunca empieza por espacio. Se aplica igual en
+  E2, E3 y E4 (todos los brazos y el control de sesgo). Los completados parciales sin este cambio se descartan.
+- **Umbrales:** sin cambio.

@@ -92,12 +92,20 @@ class Gen:
             x[i, :len(p)] = torch.tensor(p, device=self.dev)
         out = [[] for _ in range(B)]; lps = [[] for _ in range(B)]; vivo = [True] * B
         b_add = bias(prompts) if bias else None
-        for _ in range(max_new):
+        if not hasattr(self, "espacio_ini"):  # piezas que empiezan por espacio o tabulador (DESVIACIONES 2026-11-09)
+            m = torch.zeros(self.tk.get_vocab_size(), dtype=torch.bool)
+            for t, i in self.tk.get_vocab().items():
+                if t[:1] in ("Ġ", "ĉ"):
+                    m[i] = True
+            self.espacio_ini = m.to(self.dev)
+        for paso in range(max_new):
             T = int(lens.max())
             with torch.autocast(self.dev, dtype=torch.bfloat16, enabled=(self.dev == "cuda")):
                 h = self.m(x[:, :T])
             hl = h[torch.arange(B, device=self.dev), lens - 1]
             lg = self.m.logits(hl).float()
+            if paso == 0:  # el cursor está al inicio del contenido de la línea: la verdad nunca empieza por espacio
+                lg = lg.masked_fill(self.espacio_ini, float("-inf"))
             if b_add is not None:
                 lg = lg + b_add
             lp = F.log_softmax(lg, -1); nx = lp.argmax(-1)
