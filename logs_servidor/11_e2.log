@@ -1,0 +1,14 @@
+{
+ "cursores": 16640,
+ "aceptables": 595,
+ "auroc_base": 0.7274,
+ "auroc_delta": 0.791,
+ "auroc_control_otro_sufijo": 0.7293,
+ "mejora": 0.0636,
+ "mejora_ic90": [
+  0.0544,
+  0.0718
+ ],
+ "latencia_extra_p95_ms": {},
+ "veredicto": "PENDIENTE_LATENCIA"
+}

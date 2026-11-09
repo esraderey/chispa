@@ -1,6 +1,10 @@
-datos/
-runs/
-__pycache__/
 *.pyc
+__pycache__/
+datos/
 datos_srv/
+hf/
+res_srv/
+runs/
 runs_srv/
+servidor_artefactos/
+servidor_artefactos/runs/*/final.pt

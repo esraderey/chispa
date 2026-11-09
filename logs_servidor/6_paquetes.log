@@ -1,0 +1,122 @@
+[
+ {
+  "modulo": "setuptools",
+  "pip": "setuptools",
+  "repos": 3214,
+  "instalado": true
+ },
+ {
+  "modulo": "numpy",
+  "pip": "numpy",
+  "repos": 2696,
+  "instalado": true
+ },
+ {
+  "modulo": "requests",
+  "pip": "requests",
+  "repos": 2213,
+  "instalado": true
+ },
+ {
+  "modulo": "django",
+  "pip": "django",
+  "repos": 2092,
+  "instalado": true
+ },
+ {
+  "modulo": "distutils",
+  "pip": "distutils",
+  "repos": 1318,
+  "instalado": false
+ },
+ {
+  "modulo": "flask",
+  "pip": "flask",
+  "repos": 1279,
+  "instalado": true
+ },
+ {
+  "modulo": "matplotlib",
+  "pip": "matplotlib",
+  "repos": 1276,
+  "instalado": true
+ },
+ {
+  "modulo": "pytest",
+  "pip": "pytest",
+  "repos": 1188,
+  "instalado": true
+ },
+ {
+  "modulo": "six",
+  "pip": "six",
+  "repos": 1014,
+  "instalado": true
+ },
+ {
+  "modulo": "mock",
+  "pip": "mock",
+  "repos": 996,
+  "instalado": true
+ },
+ {
+  "modulo": "scipy",
+  "pip": "scipy",
+  "repos": 988,
+  "instalado": true
+ },
+ {
+  "modulo": "pandas",
+  "pip": "pandas",
+  "repos": 877,
+  "instalado": true
+ },
+ {
+  "modulo": "yaml",
+  "pip": "pyyaml",
+  "repos": 821,
+  "instalado": true
+ },
+ {
+  "modulo": "urlparse",
+  "pip": "urlparse",
+  "repos": 787,
+  "instalado": false
+ },
+ {
+  "modulo": "urllib2",
+  "pip": "urllib2",
+  "repos": 758,
+  "instalado": false
+ },
+ {
+  "modulo": "StringIO",
+  "pip": "StringIO",
+  "repos": 708,
+  "instalado": false
+ },
+ {
+  "modulo": "sqlalchemy",
+  "pip": "sqlalchemy",
+  "repos": 632,
+  "instalado": true
+ },
+ {
+  "modulo": "PIL",
+  "pip": "pillow",
+  "repos": 608,
+  "instalado": true
+ },
+ {
+  "modulo": "jinja2",
+  "pip": "jinja2",
+  "repos": 545,
+  "instalado": true
+ },
+ {
+  "modulo": "pkg_resources",
+  "pip": "pkg_resources",
+  "repos": 534,
+  "instalado": false
+ }
+]

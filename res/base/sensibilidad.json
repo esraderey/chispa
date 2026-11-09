@@ -1,0 +1,20 @@
+{
+ "cursores_en_cadenas": 1446,
+ "a_sin_cadenas": {
+  "completados": 18554,
+  "tasa": 0.1061,
+  "invenciones": 1264,
+  "nuevos": 2859,
+  "frac_invencion": 0.4421
+ },
+ "b_pyflakes": {
+  "completados_que_parsean": 11633,
+  "tasa": 0.1395,
+  "clases": {
+   "invencion": 536,
+   "local_hermano": 1265,
+   "otro_archivo": 121
+  },
+  "frac_invencion": 0.2789
+ }
+}

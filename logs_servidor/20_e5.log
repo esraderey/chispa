@@ -1,0 +1,29 @@
+{"objetivos": 40356, "repos": 26, "em": 0.2442, "em_ic90": [0.1538, 0.2644]}
+{"objetivos": 40356, "repos": 26, "em": 0.256, "em_ic90": [0.2289, 0.2782]}
+{"objetivos": 20178, "repos": 26, "em": 0.1706, "em_ic90": [0.1622, 0.2134]}
+{
+ "em_A": 0.2442,
+ "em_B": 0.256,
+ "em_C": 0.1706,
+ "B_menos_A": 0.0118,
+ "B_menos_C": 0.0854,
+ "latencia_p50_ms_4hilos": {},
+ "veredicto_P1": "MUERE",
+ "semantica": "IMPORTA",
+ "pareado_B_menos_A": {
+  "dif": 0.0118,
+  "ic90": [
+   -0.0028,
+   0.0914
+  ],
+  "repos": 26
+ },
+ "pareado_B_menos_C": {
+  "dif": 0.0854,
+  "ic90": [
+   0.0552,
+   0.0924
+  ],
+  "repos": 26
+ }
+}

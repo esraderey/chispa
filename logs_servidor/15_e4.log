@@ -1,0 +1,16 @@
+{
+ "repos": 959,
+ "tasa_mle": 0.1193,
+ "tasa_ul": 0.1134,
+ "tasa_sesgo": 0.1052,
+ "reduccion_ul": 0.0497,
+ "reduccion_ul_ic90": [
+  0.0275,
+  0.0704
+ ],
+ "reduccion_sesgo": 0.1184,
+ "em_mle": 0.1776,
+ "em_ul": 0.1709,
+ "caida_em": 0.0067,
+ "veredicto": "MUERE"
+}

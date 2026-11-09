@@ -1,0 +1,2 @@
+train {'secuencias': 614670, 'tokens': 420920784, 'objetivos': 4821589, 'con_cabecera': 2119039, 'E_p95': 16315.0, 'seed': 99}
+objetivos: 20178

@@ -28,6 +28,19 @@ negative, are generated from raw artifacts. Code in Python + PyTorch; the base m
 | E4 | ¿Castigar nombres no visibles al entrenar reduce los nombres indefinidos mejor que un sesgo sin entrenar? | reducción < 25 %, IC toca 0, EM cae > 1 pt o el sesgo logra ≥ 80 % |
 | E5 | ¿Una memoria cuyas filas son el estado del modelo al leer cada definición gana a meter las firmas en el prompt? | B − A < 3 pt o B más lento que A |
 
+## Resultados
+
+Ver **[RESULTADOS.md](RESULTADOS.md)**, generado desde `res/`. En resumen: la prueba del sufijo (P2) se valida; la memoria
+de definiciones (P1) y el monitor amortizado (P3) no alcanzan sus umbrales y se retiran. Durante la ejecución se
+detectaron y corrigieron cuatro defectos de implementación (FIM por documento, sangría inicial, memoria en E4, escala de
+la memoria en E5); todos están en [DESVIACIONES.md](DESVIACIONES.md), con lo que se vio antes de corregirlos.
+
+- `res/`: salidas crudas por ejemplo y resúmenes de E1–E5 (los cursores de evaluación se regeneran con
+  `python -m chispa.gen cursores --seed 1337` y los objetivos de E5 con `python -m chispa.e5 objetivos --seed 5`).
+- `runs_config/`: configuración y registro de pérdida de cada entrenamiento; `logs_servidor/`: registros de la H100.
+- `docs/rfc/`: los tres RFC de la serie CHISPA.
+- Modelo base en formato LLaMA de Hugging Face: `python -m chispa.export_hf` (se publica como `chispa-20m-python`).
+
 ## Reproducir
 
 ```bash

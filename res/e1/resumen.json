@@ -1,0 +1,21 @@
+{
+ "repos": 472,
+ "archivos": 5049,
+ "ocurrencias": 1117037,
+ "oportunidad": 0.0529,
+ "ic90": [
+  0.0489,
+  0.0566
+ ],
+ "oportunidad_solo_repo": 0.0423,
+ "E_p50": 607.0,
+ "E_p95": 2495.0,
+ "origen": {
+  "archivo": 7551,
+  "repo": 4116,
+  "paquete": 2553,
+  "modulo": 11533,
+  "miembro": 33295
+ },
+ "veredicto": "SOBREVIVE"
+}

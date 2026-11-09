@@ -1,0 +1,24 @@
+{
+ "completados": 20000,
+ "analizables": 20000,
+ "repos": 959,
+ "tasa_undefined": 0.1128,
+ "tasa_ic90": [
+  0.106,
+  0.1195
+ ],
+ "nuevos_total": 4016,
+ "clases": {
+  "local_hermano": 1429,
+  "invencion": 2293,
+  "otro_archivo": 294
+ },
+ "frac_invencion": 0.571,
+ "frac_invencion_ic90": [
+  0.535,
+  0.6072
+ ],
+ "em_primer_id": 0.1716,
+ "em_linea": 0.0117,
+ "veredicto_E3": "SOBREVIVE"
+}
