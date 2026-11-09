@@ -40,7 +40,7 @@ def main():
     top = [m for m, _ in cnt.most_common(a.n)]
     ok = []
     for m in top:
-        r = subprocess.run([sys.executable, "-m", "pip", "install", "-q", "--no-deps", "--target", a.destino, PIP.get(m, m)],
+        r = subprocess.run([sys.executable, "-m", "pip", "install", "-q", "--break-system-packages", "--no-deps", "--target", a.destino, PIP.get(m, m)],
                            capture_output=True, text=True)
         ok.append({"modulo": m, "pip": PIP.get(m, m), "repos": cnt[m], "instalado": r.returncode == 0})
     json.dump(ok, open(Path(a.destino) / "_chispa_paquetes.json", "w"), indent=1)

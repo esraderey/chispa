@@ -4,7 +4,7 @@ set -euo pipefail
 cd /workspace/chispa-lab
 mkdir -p logs
 D=/workspace/datos
-pip install -q tokenizers huggingface_hub pyflakes > logs/pip.log 2>&1
+python -m pip install -q --break-system-packages tokenizers huggingface_hub pyflakes > logs/pip.log 2>&1
 nvidia-smi --query-gpu=name,memory.total,power.limit --format=csv > logs/gpu.txt
 python -m chispa.data descargar   --out "$D"                        > logs/1_descargar.log 2>&1
 python -m chispa.data agrupar     --datos "$D" --procs 24 --borrar-raw> logs/2_agrupar.log 2>&1
