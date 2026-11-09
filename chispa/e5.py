@@ -160,6 +160,25 @@ def analisis(dirs, seed=1337):
     print(json.dumps(res)); return res
 
 
+def pareado(X, Y, seed=1337, n=2000):
+    """Diferencia de EM (Y − X) con IC90 por bootstrap de repositorios, juntando semillas. Solo incertidumbre: no cambia
+    el umbral ni el veredicto preregistrados."""
+    def acc(dirs):
+        a = {}
+        for d in dirs:
+            for r in map(json.loads, open(Path(d) / "pred.jsonl", encoding="utf-8")):
+                v = a.setdefault(r["repo"], [0, 0]); v[0] += 1; v[1] += r["acierto"]
+        return a
+    ax, ay = acc(X), acc(Y); reps = sorted(set(ax) & set(ay))
+    MX = np.array([ax[r] for r in reps], float); MY = np.array([ay[r] for r in reps], float)
+    em = lambda M: M[:, 1].sum() / M[:, 0].sum()
+    rng = np.random.default_rng(seed); bs = []
+    for _ in range(n):
+        i = rng.integers(0, len(reps), len(reps)); bs.append(em(MY[i]) - em(MX[i]))
+    return {"dif": round(em(MY) - em(MX), 4), "ic90": [round(float(np.percentile(bs, 5)), 4), round(float(np.percentile(bs, 95)), 4)],
+            "repos": len(reps)}
+
+
 def comparar(A, B, C, out):
     ra, rb, rc = analisis(A), analisis(B), analisis(C)
     lat = {}
@@ -173,7 +192,8 @@ def comparar(A, B, C, out):
     res = {"em_A": ra["em"], "em_B": rb["em"], "em_C": rc["em"], "B_menos_A": round(dif_ba, 4), "B_menos_C": round(dif_bc, 4),
            "latencia_p50_ms_4hilos": lat,
            "veredicto_P1": "MUERE" if (dif_ba < 0.03 or lat_ok is False) else ("PENDIENTE_LATENCIA" if lat_ok is None else "SOBREVIVE"),
-           "semantica": "SOBRA" if dif_bc < 0.01 else "IMPORTA"}
+           "semantica": "SOBRA" if dif_bc < 0.01 else "IMPORTA",
+           "pareado_B_menos_A": pareado(A, B), "pareado_B_menos_C": pareado(C, B)}
     json.dump(res, open(Path(out) / "resumen.json", "w"), indent=1); print(json.dumps(res, indent=1))
 
 

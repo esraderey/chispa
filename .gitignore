@@ -2,3 +2,5 @@ datos/
 runs/
 __pycache__/
 *.pyc
+datos_srv/
+runs_srv/
