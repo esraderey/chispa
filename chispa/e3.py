@@ -55,10 +55,17 @@ def visibles(tree, linea: int) -> set:
             vis.add(s.name)
         else:
             vis |= ligados([s])
+    vis |= {"__file__", "__name__", "__doc__", "__builtins__"}
     for n in ast.walk(tree):
         if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)) and \
                 n.lineno <= linea <= (n.end_lineno or n.lineno):
             vis |= ligados([n.args]) | ligados(n.body if isinstance(n.body, list) else [n.body])
+        elif isinstance(n, ast.ClassDef) and n.lineno <= linea <= (n.end_lineno or n.lineno):
+            for s in n.body:  # ligaduras directas del cuerpo de la clase (visibles en el propio cuerpo)
+                if isinstance(s, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                    vis.add(s.name)
+                elif not isinstance(s, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    vis |= ligados([s])
     return vis
 
 

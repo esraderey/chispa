@@ -110,7 +110,7 @@ def entrenar(a):
     t0 = time.time(); tlast = time.time(); toks = 0
     model.train()
     for step in range(start, steps):
-        lr = lr_wsd(step, steps, a.lr)
+        lr = a.lr * (1 - step / steps) if a.solo_decay else lr_wsd(step, steps, a.lr)
         for g in opt.param_groups:
             g["lr"] = lr
         tot = {}
@@ -154,6 +154,7 @@ def main():
     ap.add_argument("--log-every", type=int, default=20); ap.add_argument("--ckpt-min", type=float, default=20)
     ap.add_argument("--save-at", type=float, default=0.0)
     ap.add_argument("--alpha", type=float, default=0.3)      # E4
+    ap.add_argument("--solo-decay", action="store_true")     # E4: continuación desde at80
     ap.add_argument("--prefijo", type=int, default=256)      # E5 brazo A
     entrenar(ap.parse_args())
 
