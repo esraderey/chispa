@@ -54,11 +54,19 @@ class Bloque(nn.Module):
         self.n1 = RMSNorm(c.d); self.qkv = nn.Linear(c.d, 3 * c.d, bias=False); self.o = nn.Linear(c.d, c.d, bias=False)
         self.n2 = RMSNorm(c.d); self.w12 = nn.Linear(c.d, 2 * c.ffn, bias=False); self.w3 = nn.Linear(c.ffn, c.d, bias=False)
 
-    def forward(self, x, cos, sin):
+    def forward(self, x, cos, sin, cache=None):
         B, T, D = x.shape
         q, k, v = self.qkv(self.n1(x)).view(B, T, 3, self.h, self.hd).permute(2, 0, 3, 1, 4)
         q, k = aplicar_rope(q, cos, sin), aplicar_rope(k, cos, sin)
-        y = F.scaled_dot_product_attention(q, k, v, is_causal=True)
+        if cache is not None:  # inferencia con caché KV: cache = [k, v] o [None, None]
+            if cache[0] is not None:
+                k = torch.cat([cache[0], k], 2); v = torch.cat([cache[1], v], 2)
+            cache[0], cache[1] = k, v
+            P = k.shape[2] - T
+            mask = torch.ones(T, k.shape[2], dtype=torch.bool, device=x.device).tril(P)
+            y = F.scaled_dot_product_attention(q, k, v, attn_mask=mask)
+        else:
+            y = F.scaled_dot_product_attention(q, k, v, is_causal=True)
         x = x + self.o(y.transpose(1, 2).reshape(B, T, D))
         a, b = self.w12(self.n2(x)).chunk(2, -1)
         return x + self.w3(F.silu(a) * b)
@@ -95,6 +103,16 @@ class GPT(nn.Module):
         x = self.emb(idx)
         for b in self.blocks:
             x = b(x, cos.to(x.dtype), sin.to(x.dtype))
+        return self.nf(x)
+
+    def hidden_kv(self, idx, caches, pos0):
+        """Inferencia incremental: caches = lista por capa de [k, v] (se actualiza en el sitio); pos0 = posición inicial."""
+        T = idx.shape[1]
+        cos, sin = rope(pos0 + T, self.c.d // self.c.n_head, idx.device)
+        cos, sin = cos[pos0:], sin[pos0:]
+        x = self.emb(idx)
+        for b, c in zip(self.blocks, caches):
+            x = b(x, cos.to(x.dtype), sin.to(x.dtype), cache=c)
         return self.nf(x)
 
     def logits(self, h):
@@ -134,4 +152,4 @@ def guardar(model, path, extra=None):
 
 def cargar_modelo(path, device="cpu"):
     ck = torch.load(path, map_location=device, weights_only=False)
-    m = GPT(Config(**ck["config"])); m.load_state_dict(ck["model"]); return m, ck
+    m = GPT(Config(**ck["config"])); m.load_state_dict(ck["model"]); return m.to(device), ck
